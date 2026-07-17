@@ -10,10 +10,7 @@
  * explicit "Not Available" note.
  */
 
-import { buildSearchIndex } from "./search";
-import { parseNotes } from "./notes";
 import { parsePeso } from "./parsePeso";
-import type { ZonalRow } from "./types";
 
 export type AdminFieldKey =
   | "municipality"
@@ -287,53 +284,6 @@ export function toCsv(records: ReadonlyArray<AdminRecord>): string {
   const header = FIELDS.map((f) => csvCell(f.header)).join(",");
   const lines = records.map((rec) => FIELDS.map((f) => csvCell(rec[f.key])).join(","));
   return [header, ...lines].join("\r\n");
-}
-
-export function toJson(records: ReadonlyArray<AdminRecord>): string {
-  const objects = records.map((rec) => {
-    const obj: Record<string, string> = {};
-    for (const f of FIELDS) obj[f.header] = rec[f.key];
-    return obj;
-  });
-  return JSON.stringify(objects, null, 2);
-}
-
-// --- Bridge into the search view ------------------------------------------
-
-let localSeq = 0;
-
-/**
- * Turn a staged admin row into a `ZonalRow` for the in-memory Search dataset.
- *
- * This mirrors the read-path mapper exactly — same parsed values, same
- * `searchIndex` field list (Municipality / Province / RDO / Code /
- * Classification, Notes excluded) — so a saved row behaves identically to a
- * fetched one. It reuses the same lib helpers rather than reimplementing them.
- */
-export function adminRecordToZonalRow(rec: AdminRecord): ZonalRow {
-  localSeq += 1;
-  return {
-    id: `local-${localSeq}`,
-    municipality: rec.municipality,
-    province: rec.province,
-    region: rec.region,
-    revenueDistrict: rec.revenueDistrict,
-    code: rec.code,
-    classification: rec.classification,
-    lowText: rec.lowText,
-    highText: rec.highText,
-    lowValue: parsePeso(rec.lowText),
-    highValue: parsePeso(rec.highText),
-    dataStatus: rec.dataStatus,
-    notes: parseNotes(rec.notes),
-    searchIndex: buildSearchIndex([
-      rec.municipality,
-      rec.province,
-      rec.revenueDistrict,
-      rec.code,
-      rec.classification,
-    ]),
-  };
 }
 
 /** A blank template plus two example rows (one numeric, one "Not Available"). */

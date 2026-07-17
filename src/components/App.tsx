@@ -2,13 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AdminDashboard } from "./AdminDashboard";
-import type { SaveOutcome, StagedRecord } from "./AdminDashboard";
 import { ALL, FilterPanel } from "./FilterPanel";
 import type { FilterState } from "./FilterPanel";
 import { ResultsTable } from "./ResultsTable";
 import { fetchRegionRows } from "@/lib/client";
-import { adminRecordToZonalRow } from "@/lib/adminCsv";
-import type { AdminRecord } from "@/lib/adminCsv";
 import { searchRows } from "@/lib/search";
 import type { RegionConfig, ZonalRow } from "@/lib/types";
 
@@ -81,14 +78,6 @@ export function App({ initialRegions }: { initialRegions: ReadonlyArray<RegionCo
   // of them re-renders the panel but never recomputes `results`.
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
 
-  // Rows saved from the admin dashboard, in memory only, keyed by region id.
-  // They are merged into the searchable set alongside the fetched rows.
-  const [localByRegion, setLocalByRegion] = useState<Record<string, Array<ZonalRow>>>({});
-  // Staged admin rows are lifted here so switching tabs doesn't discard them.
-  const [stagedRecords, setStagedRecords] = useState<Array<StagedRecord>>([]);
-  // After a save, reveal the saved region's rows once its data is ready.
-  const [pendingReveal, setPendingReveal] = useState<string | null>(null);
-
   /**
    * One cache entry per region, so re-selecting a region you already loaded is
    * instant and costs no request. A ref, not state: writing to it must never
@@ -98,12 +87,12 @@ export function App({ initialRegions }: { initialRegions: ReadonlyArray<RegionCo
 
   const region = regions.find((r) => r.id === regionId) ?? firstRegion ?? null;
 
-  // Fetched rows plus any saved-from-admin rows for this region. `[]` until the
-  // region's fetch resolves. Memoised so a plain re-render doesn't hand
-  // FilterPanel a fresh array and force its option lists to recompute.
+  // The fetched rows for this region. `[]` until the region's fetch resolves.
+  // Memoised so a plain re-render doesn't hand FilterPanel a fresh array and
+  // force its option lists to recompute.
   const searchableRows = useMemo<Array<ZonalRow>>(
-    () => (load.status === "ready" ? [...load.rows, ...(localByRegion[regionId] ?? [])] : []),
-    [load, localByRegion, regionId],
+    () => (load.status === "ready" ? load.rows : []),
+    [load],
   );
 
   // The ONLY data effect. Fetches (and caches) on region change. Deliberately
@@ -145,17 +134,6 @@ export function App({ initialRegions }: { initialRegions: ReadonlyArray<RegionCo
   }, [regionId]);
 
   /**
-   * One-shot reveal after a save. Not filter-driven — it fires only while a
-   * `pendingReveal` is set (by handleSave), lists the region's full merged set
-   * once, then clears itself. It never runs on a dropdown change.
-   */
-  useEffect(() => {
-    if (pendingReveal === null || regionId !== pendingReveal || load.status !== "ready") return;
-    setResults({ query: "", rows: [...load.rows, ...(localByRegion[regionId] ?? [])] });
-    setPendingReveal(null);
-  }, [pendingReveal, regionId, load, localByRegion]);
-
-  /**
    * Region change is the one input that does more than update its own control:
    * it drops the frozen results and clears downstream selections, so XIII rows
    * never appear under a XII heading and a stale province filter can't survive.
@@ -191,73 +169,14 @@ export function App({ initialRegions }: { initialRegions: ReadonlyArray<RegionCo
   }, []);
 
   /**
-   * The only path to a new result set. Runs against the in-memory array
-   * (fetched rows plus any saved-from-admin rows for this region) — text
+   * The only path to a new result set. Runs against the fetched rows — text
    * matcher first, dropdown filters exact-matched on top.
    */
   const handleSubmit = useCallback(() => {
     if (load.status !== "ready") return;
-    const base = [...load.rows, ...(localByRegion[regionId] ?? [])];
-    const matched = applyFilters(searchRows(base, filters.text), filters);
+    const matched = applyFilters(searchRows(load.rows, filters.text), filters);
     setResults({ query: filters.text.trim(), rows: matched });
-  }, [load, filters, localByRegion, regionId]);
-
-  /**
-   * Commit staged admin rows into the in-memory Search dataset, grouped by the
-   * region each row names. Unmatched-region rows are skipped and reported. On
-   * success we jump to the Search tab, select the first saved region, and let
-   * the reveal effect list the rows.
-   */
-  const handleSave = useCallback(
-    (recs: ReadonlyArray<AdminRecord>, targetRegionId: string | null): SaveOutcome => {
-      const additions: Record<string, Array<ZonalRow>> = {};
-      const savedRegionIds: Array<string> = [];
-      let saved = 0;
-      let skipped = 0;
-
-      recs.forEach((rec) => {
-        // Explicit target routes every row there; otherwise fall back to a
-        // case-insensitive match on the row's own Region field.
-        const target = targetRegionId
-          ? regions.find((r) => r.id === targetRegionId)
-          : regions.find((r) => r.label.toLowerCase() === rec.region.trim().toLowerCase());
-        if (!target) {
-          skipped += 1;
-          return;
-        }
-        const row = adminRecordToZonalRow(rec);
-        // When a region is chosen explicitly, stamp it so the row is coherent
-        // with the bucket it now lives in.
-        if (targetRegionId) row.region = target.label;
-        (additions[target.id] ??= []).push(row);
-        saved += 1;
-        if (!savedRegionIds.includes(target.id)) savedRegionIds.push(target.id);
-      });
-
-      const reveal = savedRegionIds[0];
-      if (saved > 0 && reveal) {
-        setLocalByRegion((prev) => {
-          const next = { ...prev };
-          for (const rid of Object.keys(additions)) {
-            next[rid] = [...(next[rid] ?? []), ...(additions[rid] ?? [])];
-          }
-          return next;
-        });
-        setStagedRecords([]);
-        setView("search");
-        setRegionId(reveal);
-        setFilters(EMPTY_FILTERS);
-        setResults(null);
-        setPendingReveal(reveal);
-      }
-
-      const regionLabels = savedRegionIds.map(
-        (id) => regions.find((r) => r.id === id)?.label ?? id,
-      );
-      return { saved, skipped, regionLabels };
-    },
-    [regions],
-  );
+  }, [load, filters]);
 
   /**
    * Called after a live DB write from Admin (import or single insert). Drops
@@ -319,13 +238,7 @@ export function App({ initialRegions }: { initialRegions: ReadonlyArray<RegionCo
       </header>
 
       {view === "admin" ? (
-        <AdminDashboard
-          regions={regions}
-          records={stagedRecords}
-          setRecords={setStagedRecords}
-          onSave={handleSave}
-          onDataChanged={handleDataChanged}
-        />
+        <AdminDashboard regions={regions} onDataChanged={handleDataChanged} />
       ) : (
         <>
           <div className="layout">
