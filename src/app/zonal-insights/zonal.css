@@ -1,0 +1,499 @@
+/* Zonal Insights — GRID-styled surface.
+   Scoped under .zi so it never bleeds into the rest of the app. Navy + gold
+   palette and map-first layout matching the GRID screenshot. */
+
+.zi {
+  --zi-navy: #14284b;
+  --zi-navy-deep: #0f1f3a;
+  --zi-navy-soft: #1d3a63;
+  --zi-copper: #b9764f;
+  --zi-copper-soft: #d9a982;
+  --zi-gold: #d8b25e;
+  --zi-gold-soft: #f0e2bf;
+  --zi-ink: #1b2430;
+  --zi-ink-soft: #5b6675;
+  --zi-line: #e2e6ec;
+  --zi-line-strong: #c7cdd6;
+  --zi-bg: #f4f6f9;
+  --zi-panel: #ffffff;
+  --zi-sunk: #eef1f5;
+  --zi-verified: #1f7a4d;
+  --zi-verified-bg: #e8f4ee;
+  --zi-assumed: #8a6d1e;
+  --zi-assumed-bg: #fbf3dc;
+  --zi-na: #9b3b3b;
+  --zi-na-bg: #f7e9e9;
+  --zi-radius: 12px;
+  --zi-radius-sm: 8px;
+  --zi-shadow: 0 1px 2px rgba(15, 31, 58, 0.05), 0 8px 28px rgba(15, 31, 58, 0.08);
+  --zi-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  min-height: 100vh;
+  background: var(--zi-bg);
+  color: var(--zi-ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.zi *,
+.zi *::before,
+.zi *::after {
+  box-sizing: border-box;
+}
+
+/* Title band (copper, matches screenshot) ---------------------------- */
+
+.zi-band {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.85rem 1.5rem;
+  background: linear-gradient(180deg, var(--zi-copper-soft), var(--zi-copper));
+  color: #fff;
+}
+
+.zi-band-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  background: var(--zi-navy);
+  color: #fff;
+  border: 0;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.zi-band h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Toolbar row (credits + saved/history affordances) ------------------ */
+
+.zi-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.5rem 0;
+}
+
+.zi-credits {
+  padding: 0.4rem 0.9rem;
+  background: var(--zi-gold-soft);
+  border: 1px solid var(--zi-gold);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #6a561f;
+}
+
+.zi-toolbar-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.zi-chip {
+  padding: 0.5rem 1rem;
+  background: var(--zi-panel);
+  border: 1px solid var(--zi-line-strong);
+  border-radius: var(--zi-radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--zi-navy);
+  cursor: default;
+}
+
+/* Main two-column layout -------------------------------------------- */
+
+.zi-main {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 1.25rem;
+  padding: 1rem 1.5rem 2.5rem;
+  align-items: start;
+}
+
+/* Picker card ------------------------------------------------------- */
+
+.zi-picker {
+  background: var(--zi-panel);
+  border: 1px solid var(--zi-line);
+  border-radius: var(--zi-radius);
+  box-shadow: var(--zi-shadow);
+  overflow: hidden;
+}
+
+.zi-picker-tabs {
+  display: flex;
+}
+
+.zi-picker-tab {
+  flex: 1;
+  padding: 0.7rem;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 0;
+  cursor: pointer;
+  background: var(--zi-sunk);
+  color: var(--zi-ink-soft);
+}
+
+.zi-picker-tab.is-active {
+  background: var(--zi-navy);
+  color: #fff;
+}
+
+.zi-picker-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding: 1.1rem;
+}
+
+.zi-field-label {
+  display: block;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--zi-ink-soft);
+  margin-bottom: 0.35rem;
+}
+
+.zi-select {
+  width: 100%;
+  padding: 0.62rem 0.8rem;
+  font: inherit;
+  color: var(--zi-ink);
+  background: var(--zi-panel);
+  border: 1px solid var(--zi-line-strong);
+  border-radius: 999px;
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='10' fill='%2314284b'/%3E%3Cpath d='M6 8l4 4 4-4' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  padding-right: 2.4rem;
+}
+
+.zi-select:focus-visible {
+  outline: none;
+  border-color: var(--zi-navy);
+  box-shadow: 0 0 0 3px rgba(20, 40, 75, 0.15);
+}
+
+.zi-select:disabled {
+  background-color: var(--zi-sunk);
+  color: var(--zi-ink-soft);
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.zi-field-note {
+  margin: 0.3rem 0 0;
+  font-size: 0.72rem;
+  color: var(--zi-ink-soft);
+  font-style: italic;
+}
+
+.zi-picker-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.zi-btn {
+  padding: 0.65rem 1rem;
+  font: inherit;
+  font-weight: 700;
+  border-radius: var(--zi-radius-sm);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color 0.14s ease, border-color 0.14s ease, opacity 0.14s ease;
+}
+
+.zi-btn-primary {
+  color: #fff;
+  background: var(--zi-navy);
+  border-color: var(--zi-navy);
+}
+
+.zi-btn-primary:hover:not(:disabled) {
+  background: var(--zi-navy-deep);
+}
+
+.zi-btn-ghost {
+  color: var(--zi-navy);
+  background: var(--zi-panel);
+  border-color: var(--zi-line-strong);
+}
+
+.zi-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Right column: map + results --------------------------------------- */
+
+.zi-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.zi-map-wrap {
+  position: relative;
+  height: 420px;
+  border-radius: var(--zi-radius);
+  overflow: hidden;
+  border: 1px solid var(--zi-line);
+  box-shadow: var(--zi-shadow);
+  background: var(--zi-sunk);
+}
+
+.zi-map {
+  width: 100%;
+  height: 100%;
+}
+
+.zi-map-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  padding: 0.5rem 0.9rem;
+  background: rgba(15, 31, 58, 0.82);
+  color: #fff;
+  font-size: 0.76rem;
+  backdrop-filter: blur(2px);
+}
+
+.zi-map-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--zi-ink-soft);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Result panels ----------------------------------------------------- */
+
+.zi-panel {
+  background: var(--zi-panel);
+  border: 1px solid var(--zi-line);
+  border-radius: var(--zi-radius);
+  box-shadow: var(--zi-shadow);
+  overflow: hidden;
+}
+
+.zi-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.2rem;
+  background: var(--zi-navy);
+  color: #fff;
+}
+
+.zi-panel-head h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.zi-panel-sub {
+  font-size: 0.8rem;
+  color: var(--zi-gold-soft);
+}
+
+.zi-panel-body {
+  padding: 1.1rem 1.2rem;
+}
+
+/* The "tax basis, not market price" honesty banner */
+.zi-disclaimer {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.9rem;
+  background: var(--zi-gold-soft);
+  border: 1px solid var(--zi-gold);
+  border-radius: var(--zi-radius-sm);
+  font-size: 0.82rem;
+  color: #6a561f;
+}
+
+.zi-disclaimer strong {
+  color: #4d3f16;
+}
+
+/* Comparison / list tables */
+.zi-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.88rem;
+}
+
+.zi-table th {
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--zi-ink-soft);
+  border-bottom: 1px solid var(--zi-line-strong);
+  padding: 0.55rem 0.6rem;
+  white-space: nowrap;
+}
+
+.zi-table td {
+  padding: 0.6rem 0.6rem;
+  border-bottom: 1px solid var(--zi-line);
+  vertical-align: top;
+}
+
+.zi-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.zi-row-clickable {
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.zi-row-clickable:hover td {
+  background: var(--zi-sunk);
+}
+
+.zi-row-active td {
+  background: rgba(20, 40, 75, 0.06);
+}
+
+.zi-range {
+  font-family: var(--zi-mono);
+  font-weight: 700;
+  color: var(--zi-navy);
+  white-space: nowrap;
+}
+
+.zi-code {
+  font-family: var(--zi-mono);
+  font-size: 0.78rem;
+  padding: 0.08rem 0.35rem;
+  background: var(--zi-sunk);
+  border: 1px solid var(--zi-line);
+  border-radius: 5px;
+}
+
+.zi-muted {
+  color: var(--zi-ink-soft);
+}
+
+/* Status badges */
+.zi-badge {
+  display: inline-block;
+  padding: 0.08rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.zi-badge-verified {
+  color: var(--zi-verified);
+  background: var(--zi-verified-bg);
+  border-color: #bfe0cd;
+}
+
+.zi-badge-assumed {
+  color: var(--zi-assumed);
+  background: var(--zi-assumed-bg);
+  border-color: #e7d3a1;
+}
+
+.zi-badge-not-available,
+.zi-badge-unknown {
+  color: var(--zi-na);
+  background: var(--zi-na-bg);
+  border-color: #e2bcbc;
+}
+
+/* Detail / provenance panel */
+.zi-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem 1.25rem;
+  margin: 0;
+}
+
+.zi-detail-grid .zi-wide {
+  grid-column: 1 / -1;
+}
+
+.zi-detail-grid dt {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--zi-ink-soft);
+}
+
+.zi-detail-grid dd {
+  margin: 0.2rem 0 0;
+}
+
+.zi-note-order {
+  font-family: var(--zi-mono);
+  font-size: 0.8rem;
+  color: var(--zi-ink-soft);
+}
+
+/* Empty / hint states */
+.zi-empty {
+  padding: 1.4rem;
+  text-align: center;
+  color: var(--zi-ink-soft);
+  background: var(--zi-sunk);
+  border: 1px dashed var(--zi-line-strong);
+  border-radius: var(--zi-radius-sm);
+}
+
+.zi-notice-error {
+  padding: 1rem 1.2rem;
+  background: var(--zi-na-bg);
+  border: 1px solid #e2bcbc;
+  border-radius: var(--zi-radius-sm);
+  color: var(--zi-na);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .zi-main {
+    grid-template-columns: 1fr;
+  }
+  .zi-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
