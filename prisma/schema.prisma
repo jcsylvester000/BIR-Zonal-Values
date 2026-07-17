@@ -1,0 +1,67 @@
+// Prisma schema for the BIR zonal-value app.
+//
+// One UNIFIED table (`zonal_values`) with a `region` column replaces the three
+// separate Airtable bases. It mirrors the app's `ZonalRow` domain model: both
+// the verbatim money strings (lowText/highText) AND their parsed numeric forms
+// (lowValue/highValue) are stored, so the "range, never averaged" and
+// "Not Available parses to null" rules survive at the data layer.
+//
+// The parsed values and the searchIndex are computed on write (in the admin
+// import path) using the existing verified helpers — parsePeso and
+// buildSearchIndex — so a DB row is byte-for-byte equivalent to what the
+// original fetch path produced.
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ZonalValue {
+  id String @id @default(cuid())
+
+  // Which region this row belongs to — the label, e.g. "BARMM". Replaces the
+  // per-region Airtable base. Indexed because every read filters by region.
+  region String
+
+  municipality    String
+  province        String
+  revenueDistrict String @default("")
+  // Absent on a couple of BARMM rows in the source data.
+  code            String @default("")
+  classification  String
+
+  // Money is TEXT in the source ("₱2,839.3", or "Not Available — Verification
+  // Required"). Store the raw string verbatim for display...
+  lowText  String @default("")
+  highText String @default("")
+  // ...and the parsed number for any future numeric use. Null when the cell is
+  // not a peso amount (e.g. the BARMM "Not Available" literal).
+  lowValue  Float?
+  highValue Float?
+
+  // "Verified" | "Assumed" | "Not Available" — kept as free text, not an enum,
+  // because the source is not perfectly constant.
+  dataStatus String @default("")
+
+  // The compound Notes field, stored raw. It is split into commentary /
+  // governing order on read using parseNotes, exactly as before — so the
+  // last-pipe anchoring logic stays in one place.
+  notes String @default("")
+
+  // Pre-lowercased, dash-normalised haystack (Municipality / Province / RDO /
+  // Code / Classification). Computed on write via buildSearchIndex; lets a text
+  // search be a simple case-insensitive contains at the DB or app layer.
+  searchIndex String @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([region])
+  @@index([region, province])
+  @@map("zonal_values")
+}

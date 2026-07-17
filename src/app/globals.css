@@ -1,0 +1,809 @@
+/* BIR Zonal Value Search — refined stylesheet.
+   Keeps the original green/clean identity and every class name (no component
+   changes needed); tightens the design tokens, spacing rhythm, elevation,
+   table readability, badges, and the admin dashboard. */
+
+:root {
+  /* Ink / neutrals */
+  --ink: #16202a;
+  --ink-soft: #5a6572;
+  --ink-faint: #8a93a0;
+  --line: #e5e8ec;
+  --line-strong: #cdd3da;
+  --bg: #ffffff;
+  --bg-sunk: #f4f6f8;
+  --panel: #fbfcfd;
+
+  /* Brand green */
+  --accent: #14532d;
+  --accent-hover: #0f3d21;
+  --accent-soft: #eaf3ed;
+  --accent-line: #bcdcc7;
+
+  /* Status hues */
+  --danger: #9b1c1c;
+  --danger-bg: #fdf2f2;
+  --danger-line: #ecc8c8;
+  --warn: #7a5a10;
+  --warn-bg: #fdf6e6;
+  --warn-line: #ecdbab;
+
+  /* Elevation + shape */
+  --radius: 10px;
+  --radius-sm: 7px;
+  --shadow-sm: 0 1px 2px rgba(16, 32, 42, 0.04), 0 1px 3px rgba(16, 32, 42, 0.06);
+  --shadow-md: 0 2px 6px rgba(16, 32, 42, 0.06), 0 8px 24px rgba(16, 32, 42, 0.07);
+  --ring: 0 0 0 3px rgba(20, 83, 45, 0.18);
+
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(1200px 480px at 50% -260px, var(--accent-soft), transparent 70%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2.25rem 1.25rem 4rem;
+}
+
+/* Masthead ---------------------------------------------------------- */
+
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  flex-wrap: wrap;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.masthead h1 {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+}
+
+.subtitle {
+  margin: 0.3rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.muted {
+  color: var(--ink-soft);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* View nav ---------------------------------------------------------- */
+
+.viewnav {
+  display: inline-flex;
+  padding: 0.25rem;
+  gap: 0.25rem;
+  background: var(--bg-sunk);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  box-shadow: inset 0 1px 1px rgba(16, 32, 42, 0.03);
+}
+
+.viewnav-tab {
+  padding: 0.45rem 1.15rem;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.viewnav-tab:hover:not(.is-active) {
+  color: var(--ink);
+}
+
+.viewnav-tab.is-active {
+  color: #fff;
+  background: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Two-column layout ------------------------------------------------- */
+
+.layout {
+  display: grid;
+  grid-template-columns: 328px minmax(0, 1fr);
+  gap: 1.75rem;
+  align-items: start;
+}
+
+/* Filter panel ------------------------------------------------------ */
+
+.filter-panel {
+  position: sticky;
+  top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: 1.4rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.field-select,
+.field-input,
+.field-textarea {
+  width: 100%;
+  padding: 0.62rem 0.8rem;
+  font: inherit;
+  color: inherit;
+  background-color: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field-select:hover:not(:disabled),
+.field-input:hover:not(:disabled),
+.field-textarea:hover:not(:disabled) {
+  border-color: var(--ink-faint);
+}
+
+.field-select:focus-visible,
+.field-input:focus-visible,
+.field-textarea:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--ring);
+}
+
+/* Native select kept on purpose — the browser gives type-to-jump for free,
+   which matters for regions with many municipalities and classifications. */
+.field-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Ccircle cx='11' cy='11' r='11' fill='%2314532d'/%3E%3Cpath d='M7 9l4 4 4-4' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  padding-right: 2.6rem;
+}
+
+.field-input:disabled,
+.field-select:disabled,
+.field-textarea:disabled {
+  background-color: var(--bg-sunk);
+  color: var(--ink-soft);
+  cursor: not-allowed;
+}
+
+.field-select:disabled {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Ccircle cx='11' cy='11' r='11' fill='%23b9c1c9'/%3E%3Cpath d='M7 9l4 4 4-4' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.field-hint {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.filter-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+}
+
+/* Buttons ----------------------------------------------------------- */
+
+.btn {
+  padding: 0.66rem 1.1rem;
+  font: inherit;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.14s ease, border-color 0.14s ease,
+    color 0.14s ease, box-shadow 0.14s ease, transform 0.05s ease;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  color: #fff;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn-ghost {
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  border-color: var(--ink-soft);
+  background: var(--bg-sunk);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:where(input, button, select, textarea, .toggle, a):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Results panel ----------------------------------------------------- */
+
+.results-panel {
+  min-width: 0;
+}
+
+/* Notices ----------------------------------------------------------- */
+
+.notice {
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+  box-shadow: var(--shadow-sm);
+}
+
+.notice p {
+  margin: 0.4rem 0 0;
+}
+
+.notice p:first-child {
+  margin-top: 0;
+}
+
+.notice-empty {
+  background: var(--panel);
+  border-style: dashed;
+  border-color: var(--line-strong);
+  box-shadow: none;
+}
+
+.notice-error {
+  border-color: var(--danger-line);
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* Results ----------------------------------------------------------- */
+
+.count {
+  margin: 0 0 0.9rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.results {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.results th {
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-soft);
+  background: var(--bg-sunk);
+  border-bottom: 1px solid var(--line-strong);
+  padding: 0.6rem 0.7rem;
+  white-space: nowrap;
+}
+
+.results td {
+  padding: 0.6rem 0.7rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.results tbody tr:last-child > td {
+  border-bottom: 0;
+}
+
+.result-row {
+  transition: background-color 0.12s ease;
+}
+
+.result-row:hover > td {
+  background: var(--accent-soft);
+}
+
+.result-row.is-expanded > td {
+  border-bottom-color: transparent;
+  background: var(--bg-sunk);
+}
+
+.col-toggle {
+  width: 2.2rem;
+}
+
+/* Range holds either a peso span or the literal
+   "Not Available — Verification Required" — left-aligned, allowed to wrap. */
+.col-range {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.col-rdo {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.results code {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  padding: 0.12rem 0.4rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-line);
+  border-radius: 5px;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--ink-soft);
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.12s ease, color 0.12s ease, background 0.12s ease;
+}
+
+.toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Row detail -------------------------------------------------------- */
+
+.detail-row > td {
+  background: var(--bg-sunk);
+  padding-top: 0;
+}
+
+.detail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem 1.5rem;
+  margin: 0;
+  padding: 0.5rem 0 0.9rem 2.2rem;
+}
+
+.detail-wide {
+  grid-column: 1 / -1;
+}
+
+.detail dt {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-soft);
+}
+
+.detail dd {
+  margin: 0.2rem 0 0;
+}
+
+.detail dd p {
+  margin: 0 0 0.35rem;
+}
+
+.detail-order {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.detail-empty {
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+/* Status pills ------------------------------------------------------ */
+
+.status {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+}
+
+.status-verified {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.status-assumed {
+  border-color: var(--warn-line);
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+.status-not-available {
+  border-color: var(--danger-line);
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* Footnote ---------------------------------------------------------- */
+
+.footnote {
+  margin-top: 2.5rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--panel);
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.footnote p {
+  margin: 0;
+}
+
+/* Responsive -------------------------------------------------------- */
+
+@media (max-width: 880px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .detail {
+    grid-template-columns: 1fr;
+    padding-left: 0;
+  }
+
+  .results {
+    font-size: 0.82rem;
+  }
+}
+
+/* ================================================================== */
+/* Admin dashboard                                                    */
+/* ================================================================== */
+
+.admin {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-intro {
+  margin: 0;
+  padding: 1rem 1.15rem;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  color: #21503a;
+}
+
+.admin-section {
+  padding: 1.4rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-h2 {
+  margin: 0 0 1rem;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.admin-count {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.admin-help {
+  margin: 0 0 1rem;
+  font-size: 0.84rem;
+  color: var(--ink-soft);
+}
+
+.admin-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1.1rem;
+}
+
+.admin-field-wide {
+  grid-column: 1 / -1;
+}
+
+.field-textarea {
+  resize: vertical;
+  min-height: 2.6rem;
+}
+
+.admin-form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.admin-form-buttons {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.admin-live-issues,
+.admin-issue-list {
+  margin: 0;
+  padding: 0.75rem 0.85rem 0.75rem 1.9rem;
+  background: var(--bg-sunk);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.issue {
+  font-size: 0.82rem;
+}
+
+.issue-error {
+  color: var(--danger);
+}
+
+.issue-warning {
+  color: var(--warn);
+}
+
+/* Import */
+
+.admin-import {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-file {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.5rem;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-sunk);
+  cursor: pointer;
+}
+
+.admin-paste {
+  margin-top: 0.9rem;
+}
+
+.admin-paste summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.admin-paste .field-textarea {
+  margin: 0.6rem 0;
+}
+
+/* Staged table */
+
+.admin-staged-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-empty {
+  margin: 0;
+  padding: 1.1rem;
+  text-align: center;
+  color: var(--ink-soft);
+  background: var(--panel);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+
+.admin-table {
+  margin-top: 0.25rem;
+}
+
+.admin-col-actions {
+  white-space: nowrap;
+  width: 1%;
+}
+
+.linkbtn {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: transparent;
+  border: 0;
+  padding: 0.15rem 0.35rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.linkbtn:hover {
+  text-decoration: underline;
+}
+
+.linkbtn-danger {
+  color: var(--danger);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+}
+
+.badge-ok {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.badge-warning {
+  border-color: var(--warn-line);
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+.badge-error {
+  border-color: var(--danger-line);
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* Export + Save */
+
+.admin-export-bar,
+.admin-save-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.admin-export-region,
+.admin-save-target {
+  min-width: 260px;
+  flex: 1;
+}
+
+.admin-export-buttons {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.admin-warn-note {
+  margin: 0.9rem 0 0;
+  font-size: 0.82rem;
+  color: var(--danger);
+}
+
+.admin-ok-note {
+  margin: 0.9rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.admin-save {
+  border-color: var(--accent-line);
+  background: linear-gradient(var(--accent-soft), var(--accent-soft)) padding-box,
+    var(--bg);
+}
+
+@media (max-width: 720px) {
+  .admin-form {
+    grid-template-columns: 1fr;
+  }
+}
